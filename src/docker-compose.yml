@@ -31,7 +31,7 @@ services:
   test:
     container_name: TESTES
     build: .
-    command: pytest
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && pytest"
     
 
 volumes:
