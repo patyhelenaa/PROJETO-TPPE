@@ -7,63 +7,117 @@ from datetime import date
 def test_criar_usuario_api():
     client = APIClient()
     data = {
-        "nome": "João Souza",
-        "data_nascimento": "1985-10-20",
+        "nome": "Ana Paula",
+        "email": "ana.paula@example.com",
+        "senha": "minhasenha123",
+        "data_nascimento": "1987-03-12",
         "gravidez": True,
-        "peso": 70.0
+        "peso": 62.0
     }
     response = client.post("/api/usuarios/", data, format='json')
 
     assert response.status_code == 201
-    assert response.data["nome"] == "João Souza"
+    assert response.data["nome"] == "Ana Paula"
+    assert response.data["email"] == "ana.paula@example.com"
     assert response.data["gravidez"] is True
-    assert response.data["peso"] == 70.0
+    assert response.data["peso"] == 62.0
+    assert "senha" not in response.data
 
 @pytest.mark.django_db
-def test_listar_usuarios_api():
-    Usuario.objects.create(
-        nome="Maria Silva",
-        data_nascimento=date(1990, 5, 15),
+def test_usuario_me_endpoint():
+    usuario = Usuario(
+        nome="Beatriz Costa",
+        email="beatriz.costa@example.com",
+        data_nascimento=date(1992, 8, 23),
         gravidez=False,
-        peso=65.5
+        peso=58.5
     )
+    usuario.set_password("senha123")
+    usuario.save()
+
     client = APIClient()
-    response = client.get("/api/usuarios/")
+    client.force_authenticate(user=usuario)
+    response = client.get("/api/usuarios/me/")
 
     assert response.status_code == 200
-    assert any(usuario["nome"] == "Maria Silva" for usuario in response.data)
+    assert response.data["nome"] == "Beatriz Costa"
+    assert "senha" not in response.data
 
 @pytest.mark.django_db
-def test_atualizar_usuario_api():
-    usuario = Usuario.objects.create(
-        nome="Maria Silva",
-        data_nascimento=date(1990, 5, 15),
+def test_atualizar_usuario_me_endpoint():
+    usuario = Usuario(
+        nome="Carla Fernandes",
+        email="carla.fernandes@example.com",
+        data_nascimento=date(1985, 11, 30),
         gravidez=False,
-        peso=65.5
+        peso=70.0
     )
+    usuario.set_password("senha123")
+    usuario.save()
+
     client = APIClient()
+    client.force_authenticate(user=usuario)
     data = {
-        "nome": "Maria Silva",
-        "data_nascimento": "1990-05-15",
+        "nome": "Carla Fernandes",
+        "email": "carla.fernandes@example.com",
+        "senha": "novasenha456",
+        "data_nascimento": "1985-11-30",
         "gravidez": True,
-        "peso": 68.0
+        "peso": 72.5
     }
-    response = client.put(f"/api/usuarios/{usuario.id}/", data, format='json')
+    response = client.put("/api/usuarios/me/", data, format='json')
 
     assert response.status_code == 200
-    assert response.data["peso"] == 68.0
+    assert response.data["peso"] == 72.5
     assert response.data["gravidez"] is True
+    assert response.data["email"] == "carla.fernandes@example.com"
+    assert "senha" not in response.data
+
+    usuario.refresh_from_db()
+    assert usuario.check_password("novasenha456")
 
 @pytest.mark.django_db
-def test_deletar_usuario_api():
-    usuario = Usuario.objects.create(
-        nome="Maria Silva",
-        data_nascimento=date(1990, 5, 15),
+def test_deletar_usuario_me_endpoint():
+    usuario = Usuario(
+        nome="Daniela Rocha",
+        email="daniela.rocha@example.com",
+        data_nascimento=date(1995, 1, 10),
         gravidez=False,
-        peso=65.5
+        peso=64.0
     )
+    usuario.set_password("senha123")
+    usuario.save()
+
     client = APIClient()
-    response = client.delete(f"/api/usuarios/{usuario.id}/")
+    client.force_authenticate(user=usuario)
+    response = client.delete("/api/usuarios/me/")
 
     assert response.status_code == 204
     assert Usuario.objects.count() == 0
+
+@pytest.mark.django_db
+def test_usuario_nao_ve_outros():
+    usuario1 = Usuario(
+        nome="Usuário 1",
+        email="user1@example.com",
+        data_nascimento=date(1990, 1, 1),
+        gravidez=False,
+        peso=60.0
+    )
+    usuario1.set_password("senha1")
+    usuario1.save()
+    usuario2 = Usuario(
+        nome="Usuário 2",
+        email="user2@example.com",
+        data_nascimento=date(1991, 2, 2),
+        gravidez=True,
+        peso=65.0
+    )
+    usuario2.set_password("senha2")
+    usuario2.save()
+
+    client = APIClient()
+    client.force_authenticate(user=usuario1)
+    # Não deve conseguir acessar o perfil de outro usuário
+    response = client.get(f"/api/usuarios/{usuario2.id}/")
+    assert response.status_code in (403, 404)
