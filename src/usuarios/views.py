@@ -9,7 +9,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
+        if getattr(user, 'is_authenticated', False):
             return Usuario.objects.filter(id=user.id)  # type: ignore
         return Usuario.objects.none()  # type: ignore
 
