@@ -5,7 +5,7 @@ from ciclos.views import CicloViewSet
 
 router = DefaultRouter()
 router.register(r'usuarios', UsuarioViewSet, basename='usuario')
-
+router.register(r'ciclos', CicloViewSet, basename = 'ciclo')
 
 
 urlpatterns = [
