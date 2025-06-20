@@ -4,9 +4,11 @@ from usuarios.models import Usuario
 from ciclos.models import Ciclo
 from datetime import date, timedelta
 
+@pytest.mark.django_db
 def test_usuario_check_password():
     usuario = Usuario(nome="Teste", email="teste@ex.com", data_nascimento=date(2000,1,1), gravidez=False, peso=60)
     usuario.set_password("senha123")
+    usuario.save()
     assert usuario.check_password("senha123")
     assert not usuario.check_password("errada")
 
@@ -124,6 +126,7 @@ def test_usuario_nao_ve_outros():
     response = client.get(f"/api/usuarios/{usuario2.id}/")
     assert response.status_code in (403, 404)
 
+@pytest.mark.django_db
 def test_usuario_calcular_duracao_media_ciclos():
     usuario = Usuario(nome="Teste", email="teste@ex.com", data_nascimento=date(2000,1,1), gravidez=False, peso=60)
     usuario.save()
@@ -133,13 +136,13 @@ def test_usuario_calcular_duracao_media_ciclos():
     media = usuario.calcular_duracao_media_ciclos()
     assert media == pytest.approx((28+30+27)/3)
 
+@pytest.mark.django_db
 def test_usuario_prever_proximo_ciclo():
     usuario = Usuario(nome="Teste2", email="teste2@ex.com", data_nascimento=date(2000,1,1), gravidez=False, peso=60)
     usuario.save()
     Ciclo.objects.create(usuario=usuario, data=date(2024, 6, 1), dia_menstruada=True, duracao_ciclo=28, duracao_menstruacao=5, fluxo_menstrual='MODERADO')
     Ciclo.objects.create(usuario=usuario, data=date(2024, 5, 4), dia_menstruada=True, duracao_ciclo=30, duracao_menstruacao=6, fluxo_menstrual='LEVE')
     Ciclo.objects.create(usuario=usuario, data=date(2024, 4, 6), dia_menstruada=True, duracao_ciclo=27, duracao_menstruacao=4, fluxo_menstrual='INTENSO')
-    # Último ciclo: 2024-06-01, média: 28.33... dias
     previsao = usuario.prever_proximo_ciclo()
     esperado = date(2024, 6, 1) + timedelta(days=int((28+30+27)/3))
     assert previsao == esperado
