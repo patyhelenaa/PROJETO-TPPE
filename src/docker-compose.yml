@@ -33,6 +33,12 @@ services:
     build: .
     command: sh -c "python manage.py makemigrations && python manage.py migrate && pytest"
     
+  flake8:
+    container_name: LINTER
+    build: .
+    command: flake8
+
+
 
 volumes:
   postgres_data:
