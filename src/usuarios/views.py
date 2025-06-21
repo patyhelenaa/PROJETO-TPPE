@@ -1,30 +1,35 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Usuario
-from .serializers import UsuarioSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.contrib.auth.models import User
+from .serializers import UserSerializer, ProfileSerializer
 
-class UsuarioViewSet(viewsets.ModelViewSet):
-    serializer_class = UsuarioSerializer
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get_queryset(self):
         user = self.request.user
-        if getattr(user, 'is_authenticated', False):
-            return Usuario.objects.filter(id=user.id)  # type: ignore
-        return Usuario.objects.none()  # type: ignore
+        return User.objects.filter(id=user.id)
 
     @action(detail=False, methods=['get', 'put', 'patch', 'delete'])
     def me(self, request):
-        usuario = request.user
+        user = request.user
         if request.method == 'GET':
-            serializer = self.get_serializer(usuario)
+            serializer = self.get_serializer(user)
             return Response(serializer.data)
         elif request.method in ['PUT', 'PATCH']:
-            serializer = self.get_serializer(usuario, data=request.data, partial=(request.method=='PATCH'))
+            serializer = self.get_serializer(user, data=request.data, partial=(request.method=='PATCH'))
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
         elif request.method == 'DELETE':
-            usuario.delete()
+            user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
