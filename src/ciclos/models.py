@@ -1,8 +1,8 @@
 from django.db import models
-from usuarios.models import Usuario  
+from django.contrib.auth.models import User
 
 class Ciclo(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='ciclos')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ciclos')
     data = models.DateField() 
     dia_menstruada = models.BooleanField()
     duracao_ciclo = models.PositiveIntegerField()  
@@ -15,7 +15,9 @@ class Ciclo(models.Model):
     ])
 
     def __str__(self):
-        return f"Ciclo do usuário {self.usuario.nome} em {self.data}"
+        user = self.usuario
+        user_display = getattr(user, 'username', None) or getattr(user, 'email', None) or str(user.pk)
+        return f"Ciclo do usuário {user_display} em {self.data}"
 
     class Meta:
         db_table = 'ciclo'
