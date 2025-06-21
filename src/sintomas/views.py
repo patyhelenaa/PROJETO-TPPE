@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from .models import Fisico, Humor, Libido, Secrecao, Intensidade, HumorEnum, TexturaSecrecao
 from .serializers import FisicoSerializer, HumorSerializer, LibidoSerializer, SecrecaoSerializer
@@ -11,7 +13,8 @@ class FisicoViewSet(viewsets.ModelViewSet):
     serializer_class = FisicoSerializer
 
     def get_queryset(self):
-        return Fisico.objects.filter(ciclo__usuario=self.request.user)
+        user = self.request.user
+        return Fisico.objects.filter(ciclo__usuario_id=getattr(user, 'id', None))
 
     def perform_create(self, serializer):
         ciclo = serializer.validated_data.get('ciclo')
@@ -24,7 +27,8 @@ class HumorViewSet(viewsets.ModelViewSet):
     serializer_class = HumorSerializer
 
     def get_queryset(self):
-        return Humor.objects.filter(ciclo__usuario=self.request.user)
+        user = self.request.user
+        return Humor.objects.filter(ciclo__usuario_id=getattr(user, 'id', None))
 
     def perform_create(self, serializer):
         ciclo = serializer.validated_data.get('ciclo')
@@ -37,7 +41,8 @@ class LibidoViewSet(viewsets.ModelViewSet):
     serializer_class = LibidoSerializer
 
     def get_queryset(self):
-        return Libido.objects.filter(ciclo__usuario=self.request.user)
+        user = self.request.user
+        return Libido.objects.filter(ciclo__usuario_id=getattr(user, 'id', None))
 
     def perform_create(self, serializer):
         ciclo = serializer.validated_data.get('ciclo')
@@ -50,7 +55,8 @@ class SecrecaoViewSet(viewsets.ModelViewSet):
     serializer_class = SecrecaoSerializer
 
     def get_queryset(self):
-        return Secrecao.objects.filter(ciclo__usuario=self.request.user)
+        user = self.request.user
+        return Secrecao.objects.filter(ciclo__usuario_id=getattr(user, 'id', None))
 
     def perform_create(self, serializer):
         ciclo = serializer.validated_data.get('ciclo')
@@ -59,6 +65,22 @@ class SecrecaoViewSet(viewsets.ModelViewSet):
         serializer.save()
 
 
+@swagger_auto_schema(
+    operation_description="Obter opções disponíveis para intensidade, humor e textura de secreção",
+    responses={
+        200: openapi.Response(
+            description="Opções disponíveis",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'intensidade': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT)),
+                    'humor': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT)),
+                    'textura_secrecao': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT)),
+                }
+            )
+        )
+    }
+)
 class ChoicesAPIView(APIView):
     def get(self, request):
         return Response({

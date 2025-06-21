@@ -1,35 +1,30 @@
 import pytest
 from rest_framework.test import APIClient
-from usuarios.models import Usuario
+from django.contrib.auth.models import User
+from usuarios.models import Profile
 from ciclos.models import Ciclo
 from sintomas.models import Fisico, Humor, Libido, Secrecao, Intensidade, HumorEnum, TexturaSecrecao
 from datetime import date
 
 @pytest.fixture
 def usuario_e_ciclo():
-    usuario = Usuario.objects.create(
-        nome="Teste",
-        email="teste@exemplo.com",
-        senha="senha123",
-        data_nascimento=date(2000, 1, 1),
-        gravidez=False,
-        peso=60.0,
-    )
+    user = User.objects.create_user(username="teste", email="teste@exemplo.com", password="senha123")
+    Profile.objects.create(user=user, nome="Teste", data_nascimento=date(2000, 1, 1), peso=60.0)
     ciclo = Ciclo.objects.create(
-        usuario=usuario,
+        usuario=user,
         data=date(2025, 6, 24),
         dia_menstruada=True,
         duracao_ciclo=28,
         duracao_menstruacao=5,
         fluxo_menstrual="MODERADO"
     )
-    return usuario, ciclo
+    return user, ciclo
 
 @pytest.mark.django_db
 def test_criar_fisico(usuario_e_ciclo):
-    usuario, ciclo = usuario_e_ciclo
+    user, ciclo = usuario_e_ciclo
     client = APIClient()
-    client.force_authenticate(user=usuario)
+    client.force_authenticate(user=user)
     data = {
         "intensidade": Intensidade.LEVE,
         "descricao": "Dor leve",
@@ -47,7 +42,7 @@ def test_criar_fisico(usuario_e_ciclo):
 
 @pytest.mark.django_db
 def test_listar_fisico(usuario_e_ciclo):
-    usuario, ciclo = usuario_e_ciclo
+    user, ciclo = usuario_e_ciclo
     Fisico.objects.create(
         intensidade=Intensidade.MODERADO,
         descricao="Dor moderada",
@@ -58,16 +53,17 @@ def test_listar_fisico(usuario_e_ciclo):
         ciclo=ciclo
     )
     client = APIClient()
-    client.force_authenticate(user=usuario)
+    client.force_authenticate(user=user)
     response = client.get("/api/fisico/")
     assert response.status_code == 200
+    assert len(response.data) > 0
     assert any(f["nome_sintoma"] == "Dor nas costas" for f in response.data)
 
 @pytest.mark.django_db
 def test_criar_humor(usuario_e_ciclo):
-    usuario, ciclo = usuario_e_ciclo
+    user, ciclo = usuario_e_ciclo
     client = APIClient()
-    client.force_authenticate(user=usuario)
+    client.force_authenticate(user=user)
     data = {
         "intensidade": Intensidade.INTENSO,
         "descricao": "Senti tristeza profunda",
@@ -84,7 +80,7 @@ def test_criar_humor(usuario_e_ciclo):
 
 @pytest.mark.django_db
 def test_listar_humor(usuario_e_ciclo):
-    usuario, ciclo = usuario_e_ciclo
+    user, ciclo = usuario_e_ciclo
     Humor.objects.create(
         intensidade=Intensidade.LEVE,
         descricao="Alegria leve",
@@ -95,16 +91,17 @@ def test_listar_humor(usuario_e_ciclo):
         ciclo=ciclo
     )
     client = APIClient()
-    client.force_authenticate(user=usuario)
+    client.force_authenticate(user=user)
     response = client.get("/api/humor/")
     assert response.status_code == 200
+    assert len(response.data) > 0
     assert any(h["nome_sintoma"] == "Felicidade" for h in response.data)
 
 @pytest.mark.django_db
 def test_criar_libido(usuario_e_ciclo):
-    usuario, ciclo = usuario_e_ciclo
+    user, ciclo = usuario_e_ciclo
     client = APIClient()
-    client.force_authenticate(user=usuario)
+    client.force_authenticate(user=user)
     data = {
         "intensidade": Intensidade.MODERADO,
         "descricao": "Teve relações com parceiro",
@@ -121,7 +118,7 @@ def test_criar_libido(usuario_e_ciclo):
 
 @pytest.mark.django_db
 def test_listar_libido(usuario_e_ciclo):
-    usuario, ciclo = usuario_e_ciclo
+    user, ciclo = usuario_e_ciclo
     Libido.objects.create(
         intensidade=Intensidade.LEVE,
         descricao="Sem relações",
@@ -132,16 +129,17 @@ def test_listar_libido(usuario_e_ciclo):
         ciclo=ciclo
     )
     client = APIClient()
-    client.force_authenticate(user=usuario)
+    client.force_authenticate(user=user)
     response = client.get("/api/libido/")
     assert response.status_code == 200
+    assert len(response.data) > 0
     assert any(l["nome_sintoma"] == "Libido baixa" for l in response.data)
 
 @pytest.mark.django_db
 def test_criar_secrecao(usuario_e_ciclo):
-    usuario, ciclo = usuario_e_ciclo
+    user, ciclo = usuario_e_ciclo
     client = APIClient()
-    client.force_authenticate(user=usuario)
+    client.force_authenticate(user=user)
     data = {
         "intensidade": Intensidade.MUITO_INTENSO,
         "descricao": "Secreção pegajosa",
@@ -158,7 +156,7 @@ def test_criar_secrecao(usuario_e_ciclo):
 
 @pytest.mark.django_db
 def test_listar_secrecao(usuario_e_ciclo):
-    usuario, ciclo = usuario_e_ciclo
+    user, ciclo = usuario_e_ciclo
     Secrecao.objects.create(
         intensidade=Intensidade.MODERADO,
         descricao="Secreção cremosa",
@@ -169,7 +167,8 @@ def test_listar_secrecao(usuario_e_ciclo):
         ciclo=ciclo
     )
     client = APIClient()
-    client.force_authenticate(user=usuario)
+    client.force_authenticate(user=user)
     response = client.get("/api/secrecao/")
     assert response.status_code == 200
+    assert len(response.data) > 0
     assert any(s["descricao"] == "Secreção cremosa" for s in response.data)
