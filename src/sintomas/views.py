@@ -4,9 +4,12 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from .models import Fisico, Humor, Libido, Secrecao, Intensidade, HumorEnum, TexturaSecrecao
-from .serializers import FisicoSerializer, HumorSerializer, LibidoSerializer, SecrecaoSerializer
-from ciclos.models import Ciclo
+from .models import (
+    Fisico, Humor, Libido, Secrecao, Intensidade, HumorEnum, TexturaSecrecao
+)
+from .serializers import (
+    FisicoSerializer, HumorSerializer, LibidoSerializer, SecrecaoSerializer
+)
 
 
 class FisicoViewSet(viewsets.ModelViewSet):
@@ -14,12 +17,16 @@ class FisicoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Fisico.objects.filter(ciclo__usuario_id=getattr(user, 'id', None))
+        return Fisico.objects.filter(
+            ciclo__usuario_id=getattr(user, 'id', None)
+        )
 
     def perform_create(self, serializer):
         ciclo = serializer.validated_data.get('ciclo')
         if ciclo.usuario != self.request.user:
-            raise PermissionError('Você só pode adicionar sintomas aos seus próprios ciclos.')
+            raise PermissionError(
+                'Você só pode adicionar sintomas aos seus próprios ciclos.'
+            )
         serializer.save()
 
 
@@ -28,12 +35,16 @@ class HumorViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Humor.objects.filter(ciclo__usuario_id=getattr(user, 'id', None))
+        return Humor.objects.filter(
+            ciclo__usuario_id=getattr(user, 'id', None)
+        )
 
     def perform_create(self, serializer):
         ciclo = serializer.validated_data.get('ciclo')
         if ciclo.usuario != self.request.user:
-            raise PermissionError('Você só pode adicionar sintomas aos seus próprios ciclos.')
+            raise PermissionError(
+                'Você só pode adicionar sintomas aos seus próprios ciclos.'
+            )
         serializer.save()
 
 
@@ -42,12 +53,16 @@ class LibidoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Libido.objects.filter(ciclo__usuario_id=getattr(user, 'id', None))
+        return Libido.objects.filter(
+            ciclo__usuario_id=getattr(user, 'id', None)
+        )
 
     def perform_create(self, serializer):
         ciclo = serializer.validated_data.get('ciclo')
         if ciclo.usuario != self.request.user:
-            raise PermissionError('Você só pode adicionar sintomas aos seus próprios ciclos.')
+            raise PermissionError(
+                'Você só pode adicionar sintomas aos seus próprios ciclos.'
+            )
         serializer.save()
 
 
@@ -56,26 +71,42 @@ class SecrecaoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Secrecao.objects.filter(ciclo__usuario_id=getattr(user, 'id', None))
+        return Secrecao.objects.filter(
+            ciclo__usuario_id=getattr(user, 'id', None)
+        )
 
     def perform_create(self, serializer):
         ciclo = serializer.validated_data.get('ciclo')
         if ciclo.usuario != self.request.user:
-            raise PermissionError('Você só pode adicionar sintomas aos seus próprios ciclos.')
+            raise PermissionError(
+                'Você só pode adicionar sintomas aos seus próprios ciclos.'
+            )
         serializer.save()
 
 
 @swagger_auto_schema(
-    operation_description="Obter opções disponíveis para intensidade, humor e textura de secreção",
+    operation_description=(
+        "Obter opções disponíveis para intensidade, humor e textura de "
+        "secreção"
+    ),
     responses={
         200: openapi.Response(
             description="Opções disponíveis",
             schema=openapi.Schema(
                 type=openapi.TYPE_OBJECT,
                 properties={
-                    'intensidade': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT)),
-                    'humor': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT)),
-                    'textura_secrecao': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT)),
+                    'intensidade': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(type=openapi.TYPE_OBJECT)
+                    ),
+                    'humor': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(type=openapi.TYPE_OBJECT)
+                    ),
+                    'textura_secrecao': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(type=openapi.TYPE_OBJECT)
+                    ),
                 }
             )
         )
@@ -84,7 +115,16 @@ class SecrecaoViewSet(viewsets.ModelViewSet):
 class ChoicesAPIView(APIView):
     def get(self, request):
         return Response({
-            "intensidade": [{"key": k, "label": v} for k, v in Intensidade.choices],
-            "humor": [{"key": k, "label": v} for k, v in HumorEnum.choices],
-            "textura_secrecao": [{"key": k, "label": v} for k, v in TexturaSecrecao.choices],
+            "intensidade": [
+                {"key": k, "label": v}
+                for k, v in Intensidade.choices
+            ],
+            "humor": [
+                {"key": k, "label": v}
+                for k, v in HumorEnum.choices
+            ],
+            "textura_secrecao": [
+                {"key": k, "label": v}
+                for k, v in TexturaSecrecao.choices
+            ],
         })

@@ -3,13 +3,25 @@ from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from usuarios.models import Profile
 from ciclos.models import Ciclo
-from sintomas.models import Fisico, Humor, Libido, Secrecao, Intensidade, HumorEnum, TexturaSecrecao
+from sintomas.models import (
+    Fisico, Humor, Libido, Secrecao, Intensidade, HumorEnum, TexturaSecrecao
+)
 from datetime import date
+
 
 @pytest.fixture
 def usuario_e_ciclo():
-    user = User.objects.create_user(username="teste", email="teste@exemplo.com", password="senha123")
-    Profile.objects.create(user=user, nome="Teste", data_nascimento=date(2000, 1, 1), peso=60.0)
+    user = User.objects.create_user(
+        username="teste",
+        email="teste@exemplo.com",
+        password="senha123"
+    )
+    Profile.objects.create(
+        user=user,
+        nome="Teste",
+        data_nascimento=date(2000, 1, 1),
+        peso=60.0
+    )
     ciclo = Ciclo.objects.create(
         usuario=user,
         data=date(2025, 6, 24),
@@ -19,6 +31,7 @@ def usuario_e_ciclo():
         fluxo_menstrual="MODERADO"
     )
     return user, ciclo
+
 
 @pytest.mark.django_db
 def test_criar_fisico(usuario_e_ciclo):
@@ -40,6 +53,7 @@ def test_criar_fisico(usuario_e_ciclo):
     assert response.data["pratica"] is True
     assert response.data["ciclo"] == ciclo.id
 
+
 @pytest.mark.django_db
 def test_listar_fisico(usuario_e_ciclo):
     user, ciclo = usuario_e_ciclo
@@ -58,6 +72,7 @@ def test_listar_fisico(usuario_e_ciclo):
     assert response.status_code == 200
     assert len(response.data) > 0
     assert any(f["nome_sintoma"] == "Dor nas costas" for f in response.data)
+
 
 @pytest.mark.django_db
 def test_criar_humor(usuario_e_ciclo):
@@ -78,6 +93,7 @@ def test_criar_humor(usuario_e_ciclo):
     assert response.data["humor"] == HumorEnum.TRISTEZA
     assert response.data["ciclo"] == ciclo.id
 
+
 @pytest.mark.django_db
 def test_listar_humor(usuario_e_ciclo):
     user, ciclo = usuario_e_ciclo
@@ -96,6 +112,7 @@ def test_listar_humor(usuario_e_ciclo):
     assert response.status_code == 200
     assert len(response.data) > 0
     assert any(h["nome_sintoma"] == "Felicidade" for h in response.data)
+
 
 @pytest.mark.django_db
 def test_criar_libido(usuario_e_ciclo):
@@ -116,6 +133,7 @@ def test_criar_libido(usuario_e_ciclo):
     assert response.data["relacoes_com_parceiro"] is True
     assert response.data["ciclo"] == ciclo.id
 
+
 @pytest.mark.django_db
 def test_listar_libido(usuario_e_ciclo):
     user, ciclo = usuario_e_ciclo
@@ -133,7 +151,8 @@ def test_listar_libido(usuario_e_ciclo):
     response = client.get("/api/libido/")
     assert response.status_code == 200
     assert len(response.data) > 0
-    assert any(l["nome_sintoma"] == "Libido baixa" for l in response.data)
+    assert any(lbd["nome_sintoma"] == "Libido baixa" for lbd in response.data)
+
 
 @pytest.mark.django_db
 def test_criar_secrecao(usuario_e_ciclo):
@@ -154,6 +173,7 @@ def test_criar_secrecao(usuario_e_ciclo):
     assert response.data["textura"] == TexturaSecrecao.PEGAJOSA
     assert response.data["ciclo"] == ciclo.id
 
+
 @pytest.mark.django_db
 def test_listar_secrecao(usuario_e_ciclo):
     user, ciclo = usuario_e_ciclo
@@ -171,4 +191,4 @@ def test_listar_secrecao(usuario_e_ciclo):
     response = client.get("/api/secrecao/")
     assert response.status_code == 200
     assert len(response.data) > 0
-    assert any(s["descricao"] == "Secreção cremosa" for s in response.data)
+    assert any(sec["descricao"] == "Secreção cremosa" for sec in response.data)
