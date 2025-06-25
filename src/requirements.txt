@@ -5,3 +5,4 @@ djangorestframework
 drf-yasg
 flake8
 pytest-django
+django-cors-headers
