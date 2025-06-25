@@ -10,6 +10,8 @@ from .models import (
 from .serializers import (
     FisicoSerializer, HumorSerializer, LibidoSerializer, SecrecaoSerializer
 )
+from ciclos.models import Ciclo
+from rest_framework.exceptions import ValidationError
 
 
 class FisicoViewSet(viewsets.ModelViewSet):
@@ -22,12 +24,16 @@ class FisicoViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        ciclo = serializer.validated_data.get('ciclo')
-        if ciclo.usuario != self.request.user:
-            raise PermissionError(
-                'Você só pode adicionar sintomas aos seus próprios ciclos.'
-            )
-        serializer.save()
+        user = self.request.user
+        data_sintoma = serializer.validated_data.get('data')
+        # Busca o ciclo correspondente à data
+        ciclo = Ciclo.objects.filter(
+            usuario=user,
+            data__lte=data_sintoma
+        ).order_by('-data').first()
+        if not ciclo:
+            raise ValidationError('Não há ciclo correspondente para a data do sintoma.')
+        serializer.save(ciclo=ciclo)
 
 
 class HumorViewSet(viewsets.ModelViewSet):
@@ -40,12 +46,16 @@ class HumorViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        ciclo = serializer.validated_data.get('ciclo')
-        if ciclo.usuario != self.request.user:
-            raise PermissionError(
-                'Você só pode adicionar sintomas aos seus próprios ciclos.'
-            )
-        serializer.save()
+        user = self.request.user
+        data_sintoma = serializer.validated_data.get('data')
+        # Busca o ciclo correspondente à data
+        ciclo = Ciclo.objects.filter(
+            usuario=user,
+            data__lte=data_sintoma
+        ).order_by('-data').first()
+        if not ciclo:
+            raise ValidationError('Não há ciclo correspondente para a data do sintoma.')
+        serializer.save(ciclo=ciclo)
 
 
 class LibidoViewSet(viewsets.ModelViewSet):
@@ -58,12 +68,16 @@ class LibidoViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        ciclo = serializer.validated_data.get('ciclo')
-        if ciclo.usuario != self.request.user:
-            raise PermissionError(
-                'Você só pode adicionar sintomas aos seus próprios ciclos.'
-            )
-        serializer.save()
+        user = self.request.user
+        data_sintoma = serializer.validated_data.get('data')
+        # Busca o ciclo correspondente à data
+        ciclo = Ciclo.objects.filter(
+            usuario=user,
+            data__lte=data_sintoma
+        ).order_by('-data').first()
+        if not ciclo:
+            raise ValidationError('Não há ciclo correspondente para a data do sintoma.')
+        serializer.save(ciclo=ciclo)
 
 
 class SecrecaoViewSet(viewsets.ModelViewSet):
@@ -76,12 +90,16 @@ class SecrecaoViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        ciclo = serializer.validated_data.get('ciclo')
-        if ciclo.usuario != self.request.user:
-            raise PermissionError(
-                'Você só pode adicionar sintomas aos seus próprios ciclos.'
-            )
-        serializer.save()
+        user = self.request.user
+        data_sintoma = serializer.validated_data.get('data')
+        # Busca o ciclo correspondente à data
+        ciclo = Ciclo.objects.filter(
+            usuario=user,
+            data__lte=data_sintoma
+        ).order_by('-data').first()
+        if not ciclo:
+            raise ValidationError('Não há ciclo correspondente para a data do sintoma.')
+        serializer.save(ciclo=ciclo)
 
 
 @swagger_auto_schema(
