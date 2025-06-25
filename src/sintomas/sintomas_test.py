@@ -44,8 +44,7 @@ def test_criar_fisico(usuario_e_ciclo):
         "nome_sintoma": "Dor muscular",
         "data": "2025-06-24",
         "pratica": True,
-        "remedio_tomado": "Nenhum",
-        "ciclo": ciclo.id
+        "remedio_tomado": "Nenhum"
     }
     response = client.post("/api/fisico/", data, format="json")
     assert response.status_code == 201
@@ -85,8 +84,7 @@ def test_criar_humor(usuario_e_ciclo):
         "nome_sintoma": "Tristeza",
         "data": "2025-06-24",
         "gatilho": "Discussão",
-        "humor": HumorEnum.TRISTEZA,
-        "ciclo": ciclo.id
+        "humor": HumorEnum.TRISTEZA
     }
     response = client.post("/api/humor/", data, format="json")
     assert response.status_code == 201
@@ -125,8 +123,7 @@ def test_criar_libido(usuario_e_ciclo):
         "nome_sintoma": "Libido",
         "data": "2025-06-24",
         "relacoes_com_parceiro": True,
-        "relacoes_sem_parceiro": False,
-        "ciclo": ciclo.id
+        "relacoes_sem_parceiro": False
     }
     response = client.post("/api/libido/", data, format="json")
     assert response.status_code == 201
@@ -165,8 +162,7 @@ def test_criar_secrecao(usuario_e_ciclo):
         "nome_sintoma": "Secreção vaginal",
         "data": "2025-06-24",
         "textura": TexturaSecrecao.PEGAJOSA,
-        "remedio_tomado": "Nenhum",
-        "ciclo": ciclo.id
+        "remedio_tomado": "Nenhum"
     }
     response = client.post("/api/secrecao/", data, format="json")
     assert response.status_code == 201
