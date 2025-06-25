@@ -18,3 +18,10 @@ def prever_proximo_ciclo(user):
         return None
     ultimo = ciclos.first()
     return ultimo.data + timedelta(days=int(media))
+
+
+def calcular_duracao_media_menstruacao(user):
+    ciclos = Ciclo.objects.filter(usuario=user)
+    if not ciclos.exists():
+        return None
+    return sum(c.duracao_menstruacao for c in ciclos) / ciclos.count()

@@ -5,7 +5,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .models import Ciclo
 from .serializers import CicloSerializer
-from .utils import calcular_duracao_media_ciclos, prever_proximo_ciclo
+from .utils import calcular_duracao_media_ciclos, prever_proximo_ciclo, calcular_duracao_media_menstruacao
 
 
 class CicloViewSet(viewsets.ModelViewSet):
@@ -63,7 +63,7 @@ class CicloViewSet(viewsets.ModelViewSet):
             duracao_media = calcular_duracao_media_ciclos(usuario)
             return Response({
                 'data_previsao': previsao.strftime('%Y-%m-%d'),
-                'duracao_media': duracao_media
+                'duracao_media': round(duracao_media) if duracao_media is not None else None
             })
         return Response(
             {'message': 'Dados insuficientes para calcular previsão'},
@@ -95,7 +95,9 @@ class CicloViewSet(viewsets.ModelViewSet):
         usuario = request.user
         ciclos = Ciclo.objects.filter(usuario=usuario)
         duracao_media = calcular_duracao_media_ciclos(usuario)
+        duracao_media_menstruacao = calcular_duracao_media_menstruacao(usuario)
         return Response({
-            'duracao_media': duracao_media,
+            'duracao_media': round(duracao_media) if duracao_media is not None else None,
+            'duracao_media_menstruacao': round(duracao_media_menstruacao) if duracao_media_menstruacao is not None else None,
             'total_ciclos': ciclos.count()
         })
