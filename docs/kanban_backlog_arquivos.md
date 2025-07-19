@@ -22,4 +22,4 @@
 
 ---
 
-![Kanban do Backlog](kanbanbacklog.png) 
+![Kanban do Backlog](kanbanBacklog.png) 
