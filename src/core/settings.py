@@ -176,6 +176,7 @@ REST_FRAMEWORK = {
 
 # CORS settings para permitir o frontend em localhost:5173
 CORS_ALLOWED_ORIGINS = [
+    "https://frontend-diario-ciclos-menstruais-production.up.railway.app",
     "http://localhost:5173",
 ]
 
