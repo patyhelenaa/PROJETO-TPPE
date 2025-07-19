@@ -32,7 +32,9 @@ class FisicoViewSet(viewsets.ModelViewSet):
             data__lte=data_sintoma
         ).order_by('-data').first()
         if not ciclo:
-            raise ValidationError('Não há ciclo correspondente para a data do sintoma.')
+            raise ValidationError(
+                'Não há ciclo correspondente para a data do sintoma.'
+            )
         serializer.save(ciclo=ciclo)
 
 
@@ -54,7 +56,9 @@ class HumorViewSet(viewsets.ModelViewSet):
             data__lte=data_sintoma
         ).order_by('-data').first()
         if not ciclo:
-            raise ValidationError('Não há ciclo correspondente para a data do sintoma.')
+            raise ValidationError(
+                'Não há ciclo correspondente para a data do sintoma.'
+            )
         serializer.save(ciclo=ciclo)
 
 
@@ -76,7 +80,9 @@ class LibidoViewSet(viewsets.ModelViewSet):
             data__lte=data_sintoma
         ).order_by('-data').first()
         if not ciclo:
-            raise ValidationError('Não há ciclo correspondente para a data do sintoma.')
+            raise ValidationError(
+                'Não há ciclo correspondente para a data do sintoma.'
+            )
         serializer.save(ciclo=ciclo)
 
 
@@ -98,7 +104,9 @@ class SecrecaoViewSet(viewsets.ModelViewSet):
             data__lte=data_sintoma
         ).order_by('-data').first()
         if not ciclo:
-            raise ValidationError('Não há ciclo correspondente para a data do sintoma.')
+            raise ValidationError(
+                'Não há ciclo correspondente para a data do sintoma.'
+            )
         serializer.save(ciclo=ciclo)
 
 
