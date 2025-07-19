@@ -7,4 +7,5 @@ flake8
 pytest-django
 django-cors-headers
 gunicorn
-whitenoisedj-database-url
+whitenoise
+dj-database-url
