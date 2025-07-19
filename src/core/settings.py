@@ -81,23 +81,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Use DATABASE_URL if available, otherwise use default PostgreSQL config
-if os.environ.get('DATABASE_URL'):
-    import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+# Use environment variables for database configuration
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'diario_ciclos_db'),
+        'USER': os.environ.get('POSTGRES_USER', 'user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
+        'HOST': os.environ.get('DATABASE_HOST', 'postgres-banco'),
+        'PORT': os.environ.get('DATABASE_PORT', '5432'),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'diario_ciclos_db',
-            'USER': 'user',
-            'PASSWORD': 'password',
-            'HOST': 'db',  # nome do serviço no docker-compose
-            'PORT': '5432',
-        }
-    }
+}
 
 # Configuração PostgreSQL para produção (Docker)
 # DATABASES = {
