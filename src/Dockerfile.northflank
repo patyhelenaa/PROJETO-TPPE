@@ -29,4 +29,4 @@ RUN python manage.py collectstatic --noinput
 RUN echo 'from django.http import JsonResponse\nfrom django.views.decorators.csrf import csrf_exempt\n@csrf_exempt\ndef health_check(request):\n    return JsonResponse({"status": "healthy"})\n' > health_check.py
 
 # Run migrations and start server
-CMD gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 1 
+CMD python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 1 
