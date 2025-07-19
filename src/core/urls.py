@@ -28,20 +28,20 @@ def health_check(request):
     return JsonResponse({"status": "healthy"})
 
 schema_view = get_schema_view(
-    openapi.Info(
-        title="API Meu Diário de Ciclos",
-        default_version='v1',
-        description=(
-            "Documentação automática da API - Sistema de controle de ciclos "
-            "menstruais"
-        ),
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contato@exemplo.com"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-    authentication_classes=[],
+   openapi.Info(
+      title="API Meu Diário de Ciclos",
+      default_version='v1',
+      description=(
+          "Documentação automática da API - Sistema de controle de ciclos "
+          "menstruais"
+      ),
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contato@exemplo.com"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+   authentication_classes=[],
 )
 
 
