@@ -178,3 +178,10 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+# Forçar HTTPS nas URLs geradas pelo Swagger e Django
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SWAGGER_SETTINGS = {
+    'USE_HTTPS': True,
+}
