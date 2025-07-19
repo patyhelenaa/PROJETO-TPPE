@@ -7,4 +7,4 @@ router.register(r'ciclos', views.CicloViewSet, basename='ciclo')
 
 urlpatterns = [
     path('', include(router.urls)),
-] 
+]
