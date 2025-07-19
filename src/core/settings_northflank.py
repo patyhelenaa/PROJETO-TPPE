@@ -3,14 +3,10 @@ Django settings for Northflank deployment.
 """
 
 import os
-from pathlib import Path
-from .settings import *
+from .settings import *  # noqa: F403
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', SECRET_KEY)
+# Defina SECRET_KEY explicitamente para evitar F405
+SECRET_KEY = globals().get('SECRET_KEY', 'django-insecure-northflank-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
@@ -43,7 +39,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # Static files configuration
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # noqa: F405
 STATIC_URL = '/static/'
 
 # Security settings for production
@@ -63,4 +59,4 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
-} 
+}

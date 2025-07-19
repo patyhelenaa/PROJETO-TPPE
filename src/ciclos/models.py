@@ -6,17 +6,17 @@ class Ciclo(models.Model):
     usuario = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='ciclos'
     )
-    data = models.DateField() 
+    data = models.DateField()
     dia_menstruada = models.BooleanField()
-    duracao_ciclo = models.PositiveIntegerField()  
-    duracao_menstruacao = models.PositiveIntegerField() 
+    duracao_ciclo = models.PositiveIntegerField()
+    duracao_menstruacao = models.PositiveIntegerField()
     fluxo_menstrual = models.CharField(
         max_length=20,
         choices=[
-        ('LEVE', 'Leve'),
-        ('MODERADO', 'Moderado'),
-        ('INTENSO', 'Intenso'),
-        ('MUITO_INTENSO', 'Muito Intenso'),
+            ('LEVE', 'Leve'),
+            ('MODERADO', 'Moderado'),
+            ('INTENSO', 'Intenso'),
+            ('MUITO_INTENSO', 'Muito Intenso'),
         ]
     )
 
